@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pooradays-user
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pooradays-user
+  template:
+    metadata:
+      labels:
+        app: pooradays-user
+    spec:                        # Spec for the container which will run in the Pod
+      containers:
+      - name: user-service
+        image: daanvinken/pooradays-user-service:0.0.1
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 4000
+#        livenessProbe:
+#          httpGet:
+#            path: /health
+#            port: 8080
+#            scheme: HTTP
+#          initialDelaySeconds: 5
+#          periodSeconds: 15
+#          timeoutSeconds: 5
+#        readinessProbe
+#          httpGet:
+#            path: /readiness
+#            port: 8080
+#            scheme: HTTP
+#          initialDelaySeconds: 5
+#          timeoutSeconds: 1
