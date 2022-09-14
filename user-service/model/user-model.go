@@ -15,9 +15,10 @@ type Base struct {
 }
 
 type User struct {
-	Name     string `gorm:"unique" json:"name"`
-	Email    string `gorm:"unique" json:"email"`
-	Password string `json:"password,omitempty"`
+	Name        string `gorm:"unique" json:"name"`
+	Email       string `gorm:"unique" json:"email"`
+	Password    string `json:"password,omitempty"`
+	PrimaryCity string `json:"primaryLocation"`
 	Base
 }
 

@@ -34,7 +34,7 @@ func (pg *Postgres) autoMigrate() {
 }
 
 func (pg *Postgres) Connect(e env.Provider) error {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Kolkata",
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Europe/Amsterdam",
 		e.Get("DB.HOST"), e.Get("DB.USERNAME"), e.Get("DB.PASSWORD"), e.Get("DB.DATABASE"), e.Get("DB.PORT"))
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -85,10 +85,11 @@ func (pg *Postgres) GetUserByEmail(email string) (*model.User, error) {
 func (pg *Postgres) Signup(u *model.Signup) (*model.User, error) {
 	var e error
 	var user *model.User
+
 	tx := pg.Db.Begin()
 	if user, e = pg.CreateUser(&u.User); e != nil {
 		tx.Rollback()
-		user.Password = ""
+		//user.Password = ""
 		return user, e
 	}
 

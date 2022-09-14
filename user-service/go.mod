@@ -5,10 +5,12 @@ go 1.18
 require (
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/gorilla/mux v1.8.0
-	github.com/rajesh4295/user-service-go v0.0.0-20210515073050-84e64c7dbaa0
+	github.com/jackc/pgconn v1.12.1
+	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
+	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.8
 )
 
@@ -16,7 +18,6 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.12.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.0 // indirect
@@ -38,5 +39,4 @@ require (
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/postgres v1.3.8 // indirect
 )

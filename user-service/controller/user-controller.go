@@ -3,11 +3,11 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"user-service/model"
 	"user-service/service"
-
-	"github.com/gorilla/mux"
 )
 
 /*
@@ -30,12 +30,13 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	if err = json.NewDecoder(r.Body).Decode(&u); err != nil {
 		fmt.Println("errr ", err)
-		RespondWithError(w, http.StatusBadRequest, err.Error())
+		RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 	defer r.Body.Close()
 	if user, err = userSVC.Signup(&u); err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err.Error())
+		log.Println("Error during signup of user: %v", err)
+		RespondWithError(w, http.StatusConflict, err)
 		return
 	}
 	RespondWithJSON(w, http.StatusOK, user)
@@ -47,12 +48,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var user *model.User
 
 	if err = json.NewDecoder(r.Body).Decode(&u); err != nil {
-		RespondWithError(w, http.StatusBadRequest, err.Error())
+		RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 	defer r.Body.Close()
 	if user, err = userSVC.Login(&u); err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err.Error())
+		RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 	RespondWithJSON(w, http.StatusOK, user)
@@ -65,20 +66,22 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if user, err = userSVC.GetUserById(userId); err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err.Error())
+		RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 	RespondWithJSON(w, http.StatusOK, user)
 
 }
 
-func RespondWithError(w http.ResponseWriter, code int, message string) {
-	RespondWithJSON(w, code, map[string]string{"error": message})
+func RespondWithError(w http.ResponseWriter, code int, err error) {
+	var error = ConvertErrorMessage(err)
+	log.Println(error)
+	var message = error.Error()
+	RespondWithJSON(w, code, map[string]string{"message": message})
 }
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
