@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-app-service
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 4000
+      targetPort: 4000
+  clusterIP: 10.96.0.2
+
+  selector:
+    app: user-service
