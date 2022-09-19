@@ -7,8 +7,9 @@ import (
 
 type UserService interface {
 	Signup(s *model.Signup) (*model.User, error)
-	Login(l *model.Login) (*model.User, error)
-	GetUserById(id string) (*model.User, error)
+	Login(l *model.Login) (*model.UserAccess, error)
+	GetUserById(id uint) (*model.User, error)
+	UpdateUserById(id uint, column string, value interface{}) (*model.User, error)
 }
 
 /*
@@ -30,10 +31,14 @@ func (s *userService) Signup(u *model.Signup) (*model.User, error) {
 
 }
 
-func (s *userService) Login(u *model.Login) (*model.User, error) {
+func (s *userService) Login(u *model.Login) (*model.UserAccess, error) {
 	return Db.Login(u)
 }
 
-func (s *userService) GetUserById(id string) (*model.User, error) {
+func (s *userService) GetUserById(id uint) (*model.User, error) {
 	return Db.GetUserById(id)
+}
+
+func (s *userService) UpdateUserById(id uint, column string, value interface{}) (*model.User, error) {
+	return Db.UpdateUserById(id, column, value)
 }

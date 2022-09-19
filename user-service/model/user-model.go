@@ -1,25 +1,48 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"time"
 )
 
-type Base struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey;" json:"id"`
-	CreatedAt int64     `gorm:"autoUpdateTime:milli" json:"createdAt"`
-	UpdatedAt int64     `gorm:"autoUpdateTime:milli" json:"updatedAt"`
+type User struct {
+	FirstNames           string `json:"FirstName"`
+	LastName             string
+	Email                string `gorm:"unique" json:"email"`
+	NewsletterSubscribed bool
+	Password             string `json:"password,omitempty"`
+	PrimaryCity          string
+	Token                uuid.UUID
+	TokenExpiryEpoch     int64
+	LastLoginEpoch       int64 `gorm:"autoUpdateTime:milli"`
+	Birthday             time.Time
+	PassportNumber       string
+	Nationality          string
+	gorm.Model
 }
 
-type User struct {
-	Name        string `gorm:"unique" json:"name"`
-	Email       string `gorm:"unique" json:"email"`
-	Password    string `json:"password,omitempty"`
-	PrimaryCity string `json:"primaryLocation"`
-	Base
+type UserAccess struct {
+	Id          uint
+	Token       uuid.UUID
+	TokenExpiry int64
+}
+
+func (u *User) GetUserAccessToken() (*UserAccess, error) {
+	var out *UserAccess
+	token, err := uuid.NewV4()
+	if err != nil {
+		return nil, err
+	}
+	expiryDate := time.Now().Local().Add(time.Hour * time.Duration(1))
+	userAccess := UserAccess{
+		Id:          u.ID,
+		Token:       token,
+		TokenExpiry: expiryDate.Unix(),
+	}
+	out = &userAccess
+	return out, nil
 }
 
 type Signup struct {
@@ -27,14 +50,14 @@ type Signup struct {
 }
 
 type Login struct {
-	Name     string
+	ID       int64
 	Email    string
 	Password string
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	id, _ := uuid.NewV4()
-	u.Base.ID = id
+	token, _ := uuid.NewV4()
+	u.Token = token
 	u.Password = HashPwd([]byte(u.Password))
 	return
 }
@@ -42,7 +65,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 func HashPwd(pwd []byte) string {
 	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println("failed to hash password: ", err)
+		panic(err)
 	}
 	return string(hash)
 }

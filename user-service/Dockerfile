@@ -22,7 +22,7 @@ RUN mkdir config
 COPY --from=builder /app/user-service .
 COPY  config/config.dev.json /root/config
 
-EXPOSE 4000
+EXPOSE 8080
 
 # Command to run the executable
 CMD ["./user-service"]

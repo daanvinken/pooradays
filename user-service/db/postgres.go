@@ -57,22 +57,34 @@ func (pg *Postgres) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func (pg *Postgres) GetUserById(id string) (*model.User, error) {
+func (pg *Postgres) GetUserById(id uint) (*model.User, error) {
 	var user *model.User
 	if e := pg.Db.First(&user, "id = ?", id).Error; e != nil {
 		return nil, e
 	}
-	user.Password = ""
 	return user, nil
 }
 
-func (pg *Postgres) GetUserByName(name string) (*model.User, error) {
+func (pg *Postgres) UpdateUserById(id uint, column string, value interface{}) (*model.User, error) {
 	var user *model.User
-	if e := pg.Db.Where(&model.User{Name: name}).First(&user).Error; e != nil {
+	var err error
+	user, err = pg.GetUserById(id)
+	if err != nil {
+		return nil, errors.New("Could not find user.")
+	}
+	if e := pg.Db.Model(&user).Update(column, value).Error; e != nil {
 		return nil, e
 	}
 	return user, nil
 }
+
+//func (pg *Postgres) GetUserByName(name string) (*model.User, error) {
+//	var user *model.User
+//	if e := pg.Db.Where(&model.User{Name: name}).First(&user).Error; e != nil {
+//		return nil, e
+//	}
+//	return user, nil
+//}
 
 func (pg *Postgres) GetUserByEmail(email string) (*model.User, error) {
 	var user *model.User
@@ -89,37 +101,38 @@ func (pg *Postgres) Signup(u *model.Signup) (*model.User, error) {
 	tx := pg.Db.Begin()
 	if user, e = pg.CreateUser(&u.User); e != nil {
 		tx.Rollback()
-		//user.Password = ""
 		return user, e
 	}
 
 	tx.Commit()
-	user.Password = ""
 	return user, nil
 }
 
-func (pg *Postgres) Login(u *model.Login) (*model.User, error) {
+func (pg *Postgres) Login(u *model.Login) (*model.UserAccess, error) {
 	var user *model.User
 	var err error
+	var userAccess *model.UserAccess
 
 	if u.Password == "" {
-		return nil, errors.New("password is required")
+		return nil, errors.New("Password is required")
 	}
 
 	if u.Email != "" {
 		user, err = pg.GetUserByEmail(u.Email)
-	} else if u.Name != "" {
-		user, err = pg.GetUserByName(u.Name)
 	} else {
-		return nil, errors.New("name or email is required")
+		return nil, errors.New("Email is required")
 	}
 
 	if err != nil {
-		return nil, errors.New("user doesn't exists")
+		return nil, errors.New("User doesn't exists")
 	}
-	if model.ComparePwd(user.Password, []byte(u.Password)) {
-		user.Password = ""
-		return user, nil
+	if !model.ComparePwd(user.Password, []byte(u.Password)) {
+		return nil, errors.New("Invalid password!")
 	}
-	return nil, errors.New("invalid password")
+	userAccess, err = user.GetUserAccessToken()
+	if err == nil {
+
+	}
+	return userAccess, err
+
 }

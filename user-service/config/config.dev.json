@@ -1,9 +1,9 @@
 {
     "ENV": "dev",
     "HOST": "0.0.0.0",
-    "PORT": 4000,
+    "PORT": 8080,
     "DB": {
-        "HOST": "postgres",
+        "HOST": "localhost",
         "PORT": "5432",
         "DATABASE": "pooradays_user_db",
         "USERNAME": "postgres",
