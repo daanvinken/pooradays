@@ -3,11 +3,10 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
-	"user-service/model"
+	"user-service/pkg/model"
 	"user-service/service"
 )
 
@@ -22,6 +21,22 @@ var (
 func Health(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Server up and running")
+}
+
+func VerifyToken(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var is_valid bool
+	token := r.URL.Query().Get("token")
+
+	if is_valid, err = userSVC.VerifyToken(token); err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+	if is_valid {
+		RespondWithStatus(w, http.StatusOK, "Token is valid.")
+	}
+	RespondWithStatus(w, http.StatusUnauthorized, "Token is not valid.")
+
 }
 
 func Signup(w http.ResponseWriter, r *http.Request) {
@@ -84,8 +99,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	//var err error
 	//var userId uint
-	params := mux.Vars(r)
-	userId, err := strconv.ParseUint(params["id"], 0, 64)
+	id := r.URL.Query().Get("id")
+	userId, err := strconv.ParseUint(id, 0, 64)
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err)
 	}
@@ -114,5 +129,5 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func RespondWithStatus(w http.ResponseWriter, code int, status string) {
-	RespondWithJSON(w, code, map[string]string{"messae": status})
+	RespondWithJSON(w, code, map[string]string{"message": status})
 }

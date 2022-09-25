@@ -28,9 +28,10 @@ func initApp() {
 }
 
 func initRoutes() {
-	mainRouter.Get("/health", controller.Health)
 	userRouter := mainRouter.RegisterSubRoute("/user")
+	mainRouter.Get("/health", controller.Health)
 	userRouter.Post("/signup", controller.Signup)
 	userRouter.Post("/login", controller.Login)
-	userRouter.Get("/{id}", controller.GetUserById)
+	userRouter.Get("/get", controller.GetUserById)
+	userRouter.Get("/verify_token", controller.VerifyToken)
 }

@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"user-service/env"
-	"user-service/model"
+	"user-service/pkg/model"
 )
 
 var instance *Postgres
@@ -60,6 +60,14 @@ func (pg *Postgres) CreateUser(user *model.User) (*model.User, error) {
 func (pg *Postgres) GetUserById(id uint) (*model.User, error) {
 	var user *model.User
 	if e := pg.Db.First(&user, "id = ?", id).Error; e != nil {
+		return nil, e
+	}
+	return user, nil
+}
+
+func (pg *Postgres) GetUserByToken(token string) (*model.User, error) {
+	var user *model.User
+	if e := pg.Db.First(&user, "token = ?", token).Error; e != nil {
 		return nil, e
 	}
 	return user, nil
@@ -130,6 +138,7 @@ func (pg *Postgres) Login(u *model.Login) (*model.UserAccess, error) {
 		return nil, errors.New("Invalid password!")
 	}
 	userAccess, err = user.GetUserAccessToken()
+
 	if err == nil {
 
 	}

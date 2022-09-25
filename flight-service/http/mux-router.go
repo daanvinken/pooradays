@@ -22,11 +22,11 @@ func NewMuxRouter() Router {
 }
 
 func (mx *MuxRouter) Get(url string, f func(w http.ResponseWriter, r *http.Request)) {
-	mx.router.HandleFunc(url, f).Methods("GET")
+	mx.router.Handle(url, authMiddleware(http.HandlerFunc(f))).Methods("GET")
 }
 
 func (mx *MuxRouter) Post(url string, f func(w http.ResponseWriter, r *http.Request)) {
-	mx.router.HandleFunc(url, f).Methods("POST")
+	mx.router.Handle(url, authMiddleware(http.HandlerFunc(f))).Methods("POST")
 }
 
 func (mx *MuxRouter) RegisterSubRoute(path string) Router {

@@ -19,10 +19,10 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 RUN mkdir config
 
-COPY --from=builder /app/user-service .
+COPY --from=builder /app/flight-service .
 COPY  config/config.dev.json /root/config
 
-EXPOSE 8080
+EXPOSE 8081
 
 # Command to run the executable
-CMD ["./user-service"]
+CMD ["./flight-service"]
