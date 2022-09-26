@@ -25,7 +25,7 @@ func initApp() {
 }
 
 func initRoutes() {
+	mainRouter.UnsafeGet("/health", controller.Health)
 	flightRouter := mainRouter.RegisterSubRoute("/flight")
-	flightRouter.Get("/health", controller.Health)
 	flightRouter.Get("/search", controller.GetFlights)
 }

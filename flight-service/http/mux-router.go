@@ -21,6 +21,10 @@ func NewMuxRouter() Router {
 	return &MuxRouter{router: mux.NewRouter()}
 }
 
+func (mx *MuxRouter) UnsafeGet(url string, f func(w http.ResponseWriter, r *http.Request)) {
+	mx.router.HandleFunc(url, f).Methods("GET")
+}
+
 func (mx *MuxRouter) Get(url string, f func(w http.ResponseWriter, r *http.Request)) {
 	mx.router.Handle(url, authMiddleware(http.HandlerFunc(f))).Methods("GET")
 }

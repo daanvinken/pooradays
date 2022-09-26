@@ -9,7 +9,7 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-  clusterIP: 10.96.0.2
+  clusterIP: 10.96.0.3
 
   selector:
     app: user-service

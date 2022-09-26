@@ -42,9 +42,14 @@ func authMiddleware(next http.Handler) http.Handler {
 		}
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
 		is_valid, err := VerifyToken(tokenString)
-		if err != nil || is_valid == false {
+		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Error verifying JWT token: " + err.Error()))
+			return
+		}
+		if is_valid == false {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Token is not valid"))
 			return
 		}
 		//name := claims.(jwt.MapClaims)["name"].(string)

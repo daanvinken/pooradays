@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o user-service .
+RUN CGO_ENABLED=0 GOOS=linux go build -o flight-service .
 
 FROM alpine:latest
 

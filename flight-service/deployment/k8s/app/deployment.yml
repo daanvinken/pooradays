@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pooradays-user
+  name: pooradays-flight
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: pooradays-user
+      app: pooradays-flight
   template:
     metadata:
       labels:
-        app: pooradays-user
+        app: pooradays-flight
     spec:                        # Spec for the container which will run in the Pod
       containers:
-      - name: user-service
-        image: daanvinken/pooradays-user-service:0.0.1
+      - name: flight-service
+        image: daanvinken/pooradays-flight-service:0.0.1
         imagePullPolicy: Always
         ports:
-          - containerPort: 8080
+          - containerPort: 8081
         env:
           - name: POD_NAME
             valueFrom:
@@ -32,14 +32,14 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-#        livenessProbe:
-#          httpGet:
-#            path: /health
-#            port: 8080
-#            scheme: HTTP
-#          initialDelaySeconds: 5
-#          periodSeconds: 15
-#          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          timeoutSeconds: 5
 #        readinessProbe
 #          httpGet:
 #            path: /readiness

@@ -5,7 +5,7 @@ import (
 	"flight-service/service"
 	"log"
 	"net/http"
-	"time"
+	"os"
 )
 
 /*
@@ -17,12 +17,11 @@ var (
 )
 
 func Health(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	log.Println("Received health check at " + string(time.Now().Local().Unix()))
-	RespondWithStatus(w, 200, "OK")
+	RespondWithStatus(w, http.StatusOK, "Server OK")
 }
 
 func GetFlights(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received request on " + os.Getenv("POD_NAME"))
 	var err error
 	if _, err = flightSVC.FindFlights("hey"); err != nil {
 		log.Println("Error during flight search: %v", err)

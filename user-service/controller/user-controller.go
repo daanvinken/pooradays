@@ -19,19 +19,23 @@ var (
 )
 
 func Health(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Server up and running")
+	RespondWithStatus(w, http.StatusOK, "Server OK")
 }
 
 func VerifyToken(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var is_valid bool
 	token := r.URL.Query().Get("token")
+	log.Println(token)
 
 	if is_valid, err = userSVC.VerifyToken(token); err != nil {
+		if err.Error() == "record not found" {
+			goto ESCAPE_DB_ERROR
+		}
 		RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
+ESCAPE_DB_ERROR:
 	if is_valid {
 		RespondWithStatus(w, http.StatusOK, "Token is valid.")
 	}
